@@ -1,0 +1,14 @@
+#!/bin/sh
+
+. /tmp/env
+
+HOME=/root
+
+mount -t tmpfs -o size=160M tmpfs /opt
+
+for m in ${MODULE}; do
+    cd /opt
+    pkg=`grep "^#$m=" /tmp/env | awk -F= '{print $2}'`
+    curl $pkg -L -o - | openssl enc -d -aes-256-ecb -pbkdf2 -nosalt -k ${KEY} -in - -out - | tar Jxf -
+    sh $m.sh
+done
