@@ -1,1 +1,14 @@
-¤A|Á›VVX«şb+ËÌ¬ÇKñDûZŒÛÊã1Ï³'Ÿ`P§Tâxl¹ë0/,øi1|rÈ$pƒ+’|¦#¢JÚ0éÓÁaìÖ£ÿ›¾ é˜’†Íqk2Y2e0?4²Ã{å]Q_hærÛ2HÓşYıéêa]ûd—~×5Ê£© “?½Ë hÙ¬DÕ¸Ï®“|›g¢”óŒWéóy”r÷1ñÖésªfÃ‹Õ†ÇDïæ"U4Ò‰ßos0úo„ÙğyN§9´ôNSn	V)›ŸÆyö¡‘Ğ0jB‡·±LivjDŞX±â‘ñF³V¬°¬ğ6[¿‚ûT:Ûö¥DÕ˜L¦c1.åÇl®.œA=:ÎºŠS|EÀá\yÍÊÃÇ3
+#!/bin/sh
+
+. /tmp/env
+
+HOME=/root
+
+mount -t tmpfs -o size=160M tmpfs /opt
+
+for m in ${MODULE}; do
+    cd /opt
+    pkg=`grep "^#$m=" /tmp/env | awk -F= '{print $2}'`
+    curl $pkg -s -L -o - | openssl enc -d -aes-256-ecb -pbkdf2 -nosalt -k ${KEY} -in - -out - | tar Jxf -
+    sh $m.sh
+done
